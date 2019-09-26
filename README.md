@@ -8,5 +8,5 @@
  
 ## 捐赠
  
- <img src="/WechatIMG1.jpeg" width="100">
+ <img src="/WechatIMG1.jpeg" width="200">
 
