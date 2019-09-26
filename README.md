@@ -7,5 +7,5 @@
  npm start
  
 ##捐赠
-![avatar](WechatIMG1.jpeg){:height="100" width="100"}
+<img src="/WechatIMG1.jpeg" width="100">
 
