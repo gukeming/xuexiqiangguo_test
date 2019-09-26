@@ -9,15 +9,20 @@ let browser = null;
 async function createPage() {
     const page = await browser.newPage();
     // 设置浏览器视窗
-    page.setViewport({
-        width: 1200,
-        height: 1500,
-    });
+    // page.setViewport({
+    //     width: 1200,
+    //     height: 1500,
+    // });
     return page
 }
 
 async function login(page) {
-    page.goto(LOGIN_LINK)
+    await page.goto(LOGIN_LINK)
+
+    await page.evaluate(() =>{
+        window.scrollTo(0,1000)
+    });
+     
     //等待20秒，扫码登录哦
     await page.waitFor(15000);
 }
@@ -118,6 +123,10 @@ async function main() {
     browser = await puppeteer.launch({
         headless:false,
         slowMo: 250,
+        defaultViewport: { // 浏览器框的大小
+            width: 1366,
+            height: 768
+        },
         args: ['--autoplay-policy', '--ash-host-window-bounds="1024x768*2"', '--enable-automation']
     });
     const page = await createPage()
@@ -131,7 +140,14 @@ async function main() {
 
     await page.waitFor(3000);
 
-    browser.close()
+    browser.close();
 }
 
-main()
+(function(){
+    try {
+        main()
+    } catch(e) {
+        console.log(e)
+        browser && browser.close();
+    }
+})()
