@@ -1,8 +1,8 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-const HOME_PAGE = 'https://www.xuexi.cn/'
-const LOGIN_LINK = 'https://pc.xuexi.cn/points/login.html'
+const HOME_PAGE = 'https://www.xuexi.cn/';
+const LOGIN_LINK = 'https://pc.xuexi.cn/points/login.html';
 
 const TOKEN_DIR = "./token";
 
@@ -10,15 +10,15 @@ let browser = null;
 let params = {};
 
 function parseArgs() {
-    const argv = process.argv
+    const argv = process.argv;
     if (argv.length <= 2) {
-        console.log('请输入手机号')
-        return
+        console.log('请输入手机号');
+        return;
     }
     const phone = process.argv[2];
-    if(phone.length !== 11) {
+    if (phone.length !== 11) {
         console.log('手机号码格式不对');
-        return
+        return;
     }
     params.phone = phone;
 }
@@ -31,7 +31,7 @@ async function createPage() {
         width: 1180,
         height: 1280,
     });
-    return page
+    return page;
 }
 
 async function login(page, needlogin) {
@@ -47,12 +47,12 @@ async function login(page, needlogin) {
         data = "";
     }
 
-    if(data && data !== '""' && !needlogin) {
+    if (data && data !== '""' && !needlogin) {
         const cookie = JSON.parse(data);
         console.log('cookies data:', cookie)
         //判断cookie是否有效
         await page.setCookie(cookie);
-    }  else {
+    } else {
         //等待20秒，扫码登录哦
         await page.waitFor(15000);
         await saveCookies(page);
@@ -65,7 +65,7 @@ function write(filename, data) {
             if (err) {
                 reject(err);
             }
-            resolve(0)
+            resolve(0);
         });
     })
 }
@@ -85,9 +85,9 @@ function read(filename) {
 
 async function saveCookies(page) {
     let tokenObj = "";
-    const cookiesSet =  await page.cookies(HOME_PAGE);
-    for(var i = 0; i < cookiesSet.length; ++i) {
-        if(cookiesSet[i].name === 'token') {
+    const cookiesSet = await page.cookies(HOME_PAGE);
+    for (var i = 0; i < cookiesSet.length; ++i) {
+        if (cookiesSet[i].name === 'token') {
             console.log(cookiesSet[i])
             tokenObj = cookiesSet[i];
             break;
@@ -106,14 +106,14 @@ async function currPage() {
 //阅读学习
 async function readXuexi(page) {
     const toutiaoPage = await currPage();
-    await toutiaoPage.waitFor(10000)
+    await toutiaoPage.waitFor(10000);
 
-    let list = await toutiaoPage.$$('.text-link-item-title'); 
-    for(let i = 0; i < 10; i++) {
+    let list = await toutiaoPage.$$('.text-link-item-title');
+    for (let i = 0; i < 10; i++) {
         console.log(i)
         list[i].click();
         await toutiaoPage.waitFor(200000);
-        const nowpage = await currPage()
+        const nowpage = await currPage();
         //关闭打开的tab页
         nowpage.close();
     }
@@ -122,12 +122,12 @@ async function readXuexi(page) {
 }
 
 async function goHome(page) {
-    await page.goto(HOME_PAGE)
-    await page.waitFor(5000)
+    await page.goto(HOME_PAGE);
+    await page.waitFor(5000);
 
     //判断有没有登录
     let logged = await page.$('.logged-text');
-    if(!logged) {
+    if (!logged) {
         console.log('请等待扫描二维码登录');
         await login(page, true);
         await goHome(page);
@@ -136,21 +136,21 @@ async function goHome(page) {
 
 async function xuexi(page) {
     //头条学习
-    // await page.click('.moreUrl'); 
-    // await readXuexi(page)
+    await page.click('.moreUrl');
+    await readXuexi(page);
 
-    // //重要新闻
-    // await page.click('.linkSpan'); 
-    // await readXuexi(page)
+    //重要新闻
+    await page.click('.linkSpan');
+    await readXuexi(page);
 
     // //第一频道
     const newPage = await createPage();
     await newPage.goto('https://www.xuexi.cn/4426aa87b0b64ac671c96379a3a8bd26/db086044562a57b441c24f2af1c8e101.html#11c4o0tv7nb-5', {
         //waitUntil: 'networkidle0'
-    })
-    await newPage.waitFor(15000)
-    await newPage.click('.list')
-    await readXuexi(page)
+    });
+    await newPage.waitFor(15000);
+    await newPage.click('.list');
+    await readXuexi(page);
 }
 
 async function main() {
@@ -159,7 +159,7 @@ async function main() {
         parseArgs();
 
         browser = await puppeteer.launch({
-            headless:false,
+            headless: false,
             slowMo: 250,
             defaultViewport: { // 浏览器框的大小
                 width: 1180,
@@ -167,28 +167,28 @@ async function main() {
             },
             args: ['--autoplay-policy', '--ash-host-window-bounds="1024x768*2"', '--enable-automation']
         });
-        const page = await createPage()
-    
-        await login(page)
-    
-        await goHome(page)
-    
-        await xuexi(page)
-    
+        const page = await createPage();
+
+        await login(page);
+
+        await goHome(page);
+
+        await xuexi(page);
+
         await page.waitFor(3000);
-    
-        await browser.close()
+
+        await browser.close();
     } catch (error) {
         console.log(error);
         await browser.close();
     }
 }
 
-(function(){
+(function () {
     try {
-        main()
-    } catch(e) {
-        console.log(e)
+        main();
+    } catch (e) {
+        console.log(e);
         browser && browser.close();
     }
-})()
+})();
