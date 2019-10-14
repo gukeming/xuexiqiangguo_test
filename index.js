@@ -35,7 +35,6 @@ async function createPage() {
 }
 
 async function login(page, needlogin) {
-    await page.goto(LOGIN_LINK);
 
     //读取本地保存的token 直接设置
     let data = "";
@@ -54,6 +53,7 @@ async function login(page, needlogin) {
         await page.setCookie(cookie);
     } else {
         //等待20秒，扫码登录哦
+        await page.goto(LOGIN_LINK);
         await page.waitFor(15000);
         await saveCookies(page);
     }
@@ -143,14 +143,17 @@ async function xuexi(page) {
     await page.click('.linkSpan');
     await readXuexi(page);
 
-    // //第一频道
+    //第一频道
     const newPage = await createPage();
     await newPage.goto('https://www.xuexi.cn/4426aa87b0b64ac671c96379a3a8bd26/db086044562a57b441c24f2af1c8e101.html#11c4o0tv7nb-5', {
         //waitUntil: 'networkidle0'
     });
-    await newPage.waitFor(15000);
+    await newPage.waitFor('.list');
+    await newPage.waitFor(20000);
     await newPage.click('.list');
     await readXuexi(page);
+
+    
 }
 
 async function main() {
