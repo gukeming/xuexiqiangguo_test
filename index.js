@@ -97,21 +97,6 @@ async function saveCookies(page) {
     await write(TOKEN_DIR + '/' + params.phone + '.txt', JSON.stringify(tokenObj));
 }
 
-//阅读学习
-// async function readXuexi(page) {
-//     await page.goto(TOUTIAO_LIST);
-//     await page.waitFor(3000);
-
-//     let list = await page.$$('.text-link-item-title'); 
-//     for(let i = 10; i < 20; i++) {
-//         list[i].click();
-//         await page.waitFor(100000);
-//         const pages = await browser.pages();
-//         //关闭打开的tab页
-//         pages[pages.length - 1].close();
-//     }
-// }
-
 async function currPage() {
     const pages = await browser.pages();
     //返回最后一个打开的页面
@@ -121,7 +106,7 @@ async function currPage() {
 //阅读学习
 async function readXuexi(page) {
     const toutiaoPage = await currPage();
-    await toutiaoPage.waitFor(8000)
+    await toutiaoPage.waitFor(10000)
 
     let list = await toutiaoPage.$$('.text-link-item-title'); 
     for(let i = 0; i < 10; i++) {
@@ -150,23 +135,20 @@ async function goHome(page) {
 }
 
 async function xuexi(page) {
-    await page.goto(HOME_PAGE)
-    await page.waitFor(5000)
-
     //头条学习
-    await page.click('.moreUrl'); 
-    await readXuexi(page)
+    // await page.click('.moreUrl'); 
+    // await readXuexi(page)
 
-    //重要新闻
-    await page.click('.linkSpan'); 
-    await readXuexi(page)
+    // //重要新闻
+    // await page.click('.linkSpan'); 
+    // await readXuexi(page)
 
     // //第一频道
     const newPage = await createPage();
     await newPage.goto('https://www.xuexi.cn/4426aa87b0b64ac671c96379a3a8bd26/db086044562a57b441c24f2af1c8e101.html#11c4o0tv7nb-5', {
         //waitUntil: 'networkidle0'
     })
-    await newPage.waitFor(12000)
+    await newPage.waitFor(15000)
     await newPage.click('.list')
     await readXuexi(page)
 }
@@ -195,10 +177,10 @@ async function main() {
     
         await page.waitFor(3000);
     
-        browser.close()
+        await browser.close()
     } catch (error) {
         console.log(error);
-        browser.close();
+        await browser.close();
     }
 }
 
